@@ -1,0 +1,79 @@
+# paraphrased from kube2iam.yml
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: gusbot
+  namespace: kube-system
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: gusbot
+rules:
+- apiGroups: ["*"]
+  resources: ["*"]
+  verbs: ["get","list","watch"]
+
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: gusbot
+subjects:
+- kind: ServiceAccount
+  name: gusbot
+  namespace: kube-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: gusbot
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: gusbot
+  namespace: kube-system
+  labels:
+    app: gusbot
+spec:
+  replicas: 1
+  # updateStrategy:
+  #   type: OnDelete
+  template:
+    metadata:
+      namespace: kube-system
+      labels:
+        name: gusbot
+    spec:
+      hostNetwork: true
+      # volumes:
+      #   - name: ssl-certs
+      #     hostPath:
+      #       path: "/etc/ssl/certs/ca-certificates.crt"
+      serviceAccountName: gusbot
+      containers:
+        - image: songgithub/gusbot
+          name: gusbot
+          # args:
+          #   - "--base-role-arn=arn:aws:iam::$(ACCOUNT_ID):role/k8s/"
+          #   - "--iptables=true"
+          #   - "--host-ip=$(HOST_IP)"
+          #   - "--host-interface=weave"
+          # ports:
+          #   - containerPort: 8181
+          #     hostPort: 8181
+          #     name: http
+          # envFrom:
+          #   - configMapRef:
+          #       name: cluster-metadata
+          env:
+            - name: API_TOKEN
+              value: xoxb-210655705446-KvQiLeYfH5YoolzbKqegyehB
+          # volumeMounts:
+          #   - name: ssl-certs
+          #     mountPath: /etc/ssl/certs/ca-certificates.crt
+          #     readOnly: true
+          # securityContext:
+          #   privileged: true

@@ -1,0 +1,36 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  KmsArn:
+    Type: String
+  ClusterNodeRole:
+    Type: String
+Resources:
+  InstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: gusbot-application-role
+      Path: /k8s/
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - ec2.amazonaws.com
+          Action:
+          - sts:AssumeRole
+        - Effect: Allow
+          Principal:
+            AWS: !Ref ClusterNodeRole
+          Action:
+          - sts:AssumeRole
+      Policies:
+        - PolicyName: allow-to-decrypt-via-kms
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+            - Effect: Allow
+              Action:
+              - kms:Decrypt
+              Resource: !Ref KmsArn

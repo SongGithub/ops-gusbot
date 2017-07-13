@@ -1,0 +1,27 @@
+dist: trusty
+sudo: false
+language: python
+python: 3.6
+cache:
+  directories:
+    - $HOME/.cache/pip
+    - $TRAVIS_BUILD_DIR/.tox
+before_install:
+  - mkdir -p $HOME/opt/local/bin
+  - export PATH=$HOME/opt/local/bin:$PATH
+  - pushd /tmp/ && git clone https://github.com/rofl0r/proxychains-ng.git && cd proxychains-ng && ./configure --prefix=$HOME/opt/local && make -j2 && make install && popd
+  - pip install shadowsocks
+  - cp scripts/slackbot-test-ctl $HOME/opt/local/bin
+  - slackbot-test-ctl init
+  - slackbot-test-ctl startproxy
+install: pip install tox
+script: tox
+deploy:
+  provider: pypi
+  distributions: sdist bdist_wheel
+  user: lins05
+  password:
+    secure: "diOVQyr+9Mr3UNSYqFkFLWs2+4+Rfp64x98Pt7FlWugO9TAoPOQSXoYCs71pszjkY7XNuo5mrbOvO6d8K6uAzQEYs/w+VXzxFcp2Cf/9oocvhQGU42M2r3Pwi89GMa1JcF81bUP+0OucAPCSOGeqyzemGKueb7fmin8PQwTE+5w="
+  on:
+    tags: true
+    repo: lins05/slackbot

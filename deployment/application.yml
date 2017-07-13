@@ -1,0 +1,141 @@
+---
+kind: Template
+apiVersion: v1
+metadata:
+  name: application
+labels:
+  template: application
+objects:
+- kind: Service
+  metadata:
+    name: gusbot
+    namespace: platform-enablement
+  spec:
+    selector:
+      app: gusbot
+    # ports:
+    # - port: 80
+    #   targetPort: <app-port>
+- apiVersion: autoscaling/v2alpha1
+  kind: HorizontalPodAutoscaler
+  metadata:
+    name: gusbot
+    namespace: platform-enablement
+  spec:
+    scaleTargetRef:
+      apiVersion: apps/v1beta1
+      kind: Deployment
+      name: gusbot
+    minReplicas: $((MIN_REPLICA_COUNT))
+    maxReplicas: $((MAX_REPLICA_COUNT))
+    metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: 65
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: 80
+- kind: Deployment
+  apiVersion: extensions/v1beta1
+  metadata:
+    name: gusbot
+    namespace: platform-enablement
+    labels:
+      app: gusbot
+  spec:
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 0
+        maxSurge: 100%
+    revisionHistoryLimit: 2
+    replicas: $((MIN_REPLICA_COUNT))
+    selector:
+      matchLabels:
+        app: gusbot
+    template:
+      metadata:
+        annotations:
+          iam.amazonaws.com/role: gusbot-application-role
+        labels:
+          app: gusbot
+          name: gusbot
+      spec:
+        containers:
+        - name: web
+          image: $(APPLICATION_IMAGE)
+          resources:
+            limits:
+              cpu: 250m
+              memory: 1500Mi
+          envFrom:
+          - configMapRef:
+              name: gusbot-environment
+          env:
+          - name: APPLICATION_VERSION
+            value: $(APPLICATION_VERSION)
+          # readinessProbe:
+          #   httpGet:
+          #     path: <app-health-check-path>
+          #     port: <app-port>
+          #   initialDelaySeconds: 15
+          #   timeoutSeconds: 5
+          #   periodSeconds: 30
+          # livenessProbe:
+          #   httpGet:
+          #     path: <app-health-check-path>
+          #     port: <app-port>
+          #   initialDelaySeconds: 45
+          #   timeoutSeconds: 5
+          #   periodSeconds: 600
+          # ports:
+          # - containerPort: <app-port>
+          #   name: web
+- kind: Ingress
+  apiVersion: extensions/v1beta1
+  metadata:
+    name: gusbot
+    namespace: platform-enablement
+    # Uncomment below if your application needs to be publicly accessible
+    # annotations:
+    #  ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0"
+  spec:
+    tls:
+      - hosts:
+        - $(DNS_RECORD)
+        secretName: $(SSL_SECRET)
+    rules:
+    - host: $(DNS_RECORD)
+      http:
+        paths:
+        - backend:
+            serviceName: gusbot
+            servicePort: 80
+
+parameters:
+  - name: APPLICATION_IMAGE
+    description: Application Docker Image
+    required: true
+    parameterType: string
+  - name: APPLICATION_VERSION
+    description: version of the application
+    required: true
+    parameterType: string
+  - name: DNS_RECORD
+    description: DNS Record to use
+    # required: true
+    parameterType: string
+  - name: SSL_SECRET
+    description: Secret where the SSL cert is stored
+    parameterType: string
+    # required: true
+  - name: MIN_REPLICA_COUNT
+    description: Number of replicas
+    value: 2
+    parameterType: int
+  - name: MAX_REPLICA_COUNT
+    description: Number of replicas
+    value: 10
+    parameterType: int
