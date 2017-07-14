@@ -6,16 +6,16 @@ metadata:
 labels:
   template: application
 objects:
-- kind: Service
-  metadata:
-    name: gusbot
-    namespace: platform-enablement
-  spec:
-    selector:
-      app: gusbot
-    # ports:
-    # - port: 80
-    #   targetPort: <app-port>
+# - kind: Service
+#   metadata:
+#     name: gusbot
+#     namespace: platform-enablement
+#   spec:
+#     selector:
+#       app: gusbot
+#     # ports:
+#     # - port: 80
+#     #   targetPort: <app-port>
 - apiVersion: autoscaling/v2alpha1
   kind: HorizontalPodAutoscaler
   metadata:
