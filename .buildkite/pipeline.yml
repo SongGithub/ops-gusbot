@@ -3,8 +3,8 @@ steps:
   - name: "docker: publish docker image"
     command: deployment/bin/publish ${BUILDKITE_BUILD_NUMBER}.${BUILDKITE_COMMIT:0:5}
     branches: master
-    agent:
-      queue: cluster-preprod
+      agent:
+        queue: cluster-preprod
 
   - wait
       
