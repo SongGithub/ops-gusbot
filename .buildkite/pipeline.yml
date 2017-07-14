@@ -8,6 +8,15 @@ steps:
 
   - wait
 
+
+  - name: ":aws: Deploy to SIT"
+    command: deployment/bin/deploy_aws sit ${BUILDKITE_BUILD_NUMBER}.${BUILDKITE_COMMIT:0:5}
+    branches: master
+    agents:
+      queue: cluster-preprod
+
+  - wait
+
   - name: ":k8s: Deploy to SIT Kubernetes"
     command: APPLICATION_VERSION=${BUILDKITE_BUILD_NUMBER}.${BUILDKITE_COMMIT:0:5} deployment/bin/deploy
     branches: master

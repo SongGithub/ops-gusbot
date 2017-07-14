@@ -1,0 +1,21 @@
+#! /bin/bash
+
+set -e
+
+if [ $# -lt 2 ]; then
+  echo "Usage: deploy <environment> <docker image tag>"
+  exit 1
+fi
+
+APP_ENV=$1
+IMAGE_TAG=$2
+
+echo "--- Pulling deploy docker image..."
+docker-compose pull deploy
+
+echo "+++ Deploying to ${APP_ENV} environment..."
+docker-compose run deploy ledger-cache-facade-${APP_ENV} up \
+  -t template.yml \
+  -p ${APP_ENV}-parameters.yml \
+  -o AppApplicationVersion=${IMAGE_TAG} \
+  -o DockerImageTag=${IMAGE_TAG}
