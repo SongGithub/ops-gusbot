@@ -11,10 +11,10 @@ APP_ENV=$1
 # IMAGE_TAG=$2
 
 echo "--- Pulling deploy docker image..."
-docker-compose pull stackup
+docker-compose -f deployment/docker-compose.yml pull stackup
 
 echo "+++ Deploying to ${APP_ENV} environment..."
-docker-compose run stackup gusbot-role up \
+docker-compose -f deployment/docker-compose.yml run stackup gusbot-role up \
   -t deployment/iam-role.yml \
   -p deployment/${APP_ENV}/iam-params.yml \
   # -o AppApplicationVersion=${IMAGE_TAG} \
