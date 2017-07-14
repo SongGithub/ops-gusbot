@@ -10,7 +10,7 @@ steps:
 
 
   - name: ":aws: Deploy to SIT"
-    command: deployment/bin/deploy_aws sit ${BUILDKITE_BUILD_NUMBER}.${BUILDKITE_COMMIT:0:5}
+    command: deployment/bin/deploy_aws sit
     branches: master
     agents:
       queue: cluster-preprod
