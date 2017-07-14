@@ -1,6 +1,13 @@
 ---
 steps:
+  - name: "docker: publish docker image"
+    command: deployment/bin/publish ${BUILDKITE_BUILD_NUMBER}.${BUILDKITE_COMMIT:0:5}
+    branches: master
+    agent:
+      queue: cluster-preprod
 
+  - wait
+      
   - name: ":k8s: Deploy to SIT Kubernetes"
     command: APPLICATION_VERSION=${BUILDKITE_BUILD_NUMBER}.${BUILDKITE_COMMIT:0:5} deployment/bin/deploy
     branches: master
