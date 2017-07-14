@@ -1,4 +1,4 @@
-[![PyPI](https://badge.fury.io/py/slackbot.svg)](https://pypi.python.org/pypi/slackbot) [![Build Status](https://secure.travis-ci.org/lins05/slackbot.svg?branch=master)](http://travis-ci.org/lins05/slackbot)
+[![Build status](https://badge.buildkite.com/24dbdbb26de4b37239362e3d8fe079db3d897b9db9427825e3.svg)](https://buildkite.com/myob/ops-slackbot)
        
 A chat bot for [Slack](https://slack.com) inspired by [llimllib/limbo](https://github.com/llimllib/limbo) and [will](https://github.com/skoczen/will).
 

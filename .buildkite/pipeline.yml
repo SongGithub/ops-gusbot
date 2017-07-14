@@ -5,7 +5,7 @@ steps:
     command: APPLICATION_VERSION=${BUILDKITE_BUILD_NUMBER}.${BUILDKITE_COMMIT:0:5} deployment/bin/deploy
     branches: master
     agents:
-      queue: central-dev
+    queue: cluster-preprod
     env:
       ENVIRONMENT: sit
       APPLICATION_IMAGE: 693429498512.dkr.ecr.ap-southeast-2.amazonaws.com/platform-enablement/gusbot #without version

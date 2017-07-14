@@ -93,26 +93,26 @@ objects:
           # ports:
           # - containerPort: <app-port>
           #   name: web
-- kind: Ingress
-  apiVersion: extensions/v1beta1
-  metadata:
-    name: gusbot
-    namespace: platform-enablement
-    # Uncomment below if your application needs to be publicly accessible
-    # annotations:
-    #  ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0"
-  spec:
-    tls:
-      - hosts:
-        - $(DNS_RECORD)
-        secretName: $(SSL_SECRET)
-    rules:
-    - host: $(DNS_RECORD)
-      http:
-        paths:
-        - backend:
-            serviceName: gusbot
-            servicePort: 80
+# - kind: Ingress
+#   apiVersion: extensions/v1beta1
+#   metadata:
+#     name: gusbot
+#     namespace: platform-enablement
+#     # Uncomment below if your application needs to be publicly accessible
+#     # annotations:
+#     #  ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0"
+#   spec:
+#     tls:
+#       - hosts:
+#         - $(DNS_RECORD)
+#         secretName: $(SSL_SECRET)
+#     rules:
+#     - host: $(DNS_RECORD)
+#       http:
+#         paths:
+#         - backend:
+#             serviceName: gusbot
+#             servicePort: 80
 
 parameters:
   - name: APPLICATION_IMAGE
