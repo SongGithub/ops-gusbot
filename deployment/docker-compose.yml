@@ -17,3 +17,5 @@ stackup:
   volumes:
     - ".:/app/deployment"
     - "$HOME/.aws:/root/.aws"
+  environment:
+    - AWS_REGION=ap-southeast-2
