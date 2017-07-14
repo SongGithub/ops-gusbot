@@ -1,21 +1,17 @@
-#! /bin/bash
+#!/usr/bin/env bash
+environment="${ENVIRONMENT:?Need to set ENVIRONMENT}"
+application_image="${APPLICATION_IMAGE:?Need to set APPLICATION_IMAGE}"
+application_version="${APPLICATION_VERSION:?Need to set APPLICATION_VERSION}"
 
-set -e
+dcr="docker-compose -f deployment/docker-compose.yml"
 
-if [ $# -lt 2 ]; then
-  echo "Usage: deploy <environment> <docker image tag>"
-  exit 1
-fi
+$dcr pull
 
-APP_ENV=$1
-IMAGE_TAG=$2
+$dcr run kubectl apply -f deployment/$environment/environment.yml
 
-echo "--- Pulling deploy docker image..."
-docker-compose pull deploy
+$dcr run ktmpl deployment/application.yml \
+    --parameter APPLICATION_IMAGE $application_image:$application_version \
+    --parameter APPLICATION_VERSION $application_version \
+    --parameter-file deployment/$environment/application-params.yml | $dcr run kubectl apply -f -
 
-echo "+++ Deploying to ${APP_ENV} environment..."
-docker-compose run deploy ledger-cache-facade-${APP_ENV} up \
-  -t template.yml \
-  -p ${APP_ENV}-parameters.yml \
-  -o AppApplicationVersion=${IMAGE_TAG} \
-  -o DockerImageTag=${IMAGE_TAG}
+$dcr run kubectl rollout status -w deployment/gusbot -n platform-enablement
