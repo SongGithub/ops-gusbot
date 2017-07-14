@@ -6,7 +6,7 @@ from slackbot.bot import listen_to
 @listen_to('@here')
 def at_here(message):
     message.react('police-gus'),
-    message.reply("BOB IS YOUR UNCLE. Please don't use _@here_. Check out our Slacktiquete: https://myob.slack.com/archives/C3F2M5NFP/p1498438403848842", in_thread=True)
+    message.reply("Please don't use _@here_. Check out our Slacktiquete: https://myob.slack.com/archives/C3F2M5NFP/p1498438403848842", in_thread=True)
 
 # Response type
 # response trigger
