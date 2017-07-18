@@ -14,6 +14,26 @@ from slackbot import settings
 
 logger = logging.getLogger(__name__)
 
+EXCLUSION_LIST = {
+"aishawilson",
+"dan.harper",
+"dedelala",
+"ians",
+"jordan.cleal",
+"kerry.wang",
+"treach",
+"paul.borg",
+"paul.vandevreede",
+"pj",
+"pjmichael",
+"shane.corcoran",
+"songjin_myob",
+"gus",
+"marius.nel",
+"mel",
+"orlando",
+"mike.somogyi"
+}
 
 class MessageDispatcher(object):
     def __init__(self, slackclient, plugins, errors_to):
@@ -36,6 +56,9 @@ class MessageDispatcher(object):
         self.AT_MESSAGE_MATCHER = re.compile(r'^(?:\<@(?P<atuser>\w+)\>:?|(?P<username>\w+):{}) ?(?P<text>.*)$'.format(alias_regex))
 
     def start(self):
+        logger.info("Users in exclusions list include:")
+        for person in EXCLUSION_LIST:
+            logger.info("- " + person)
         self._pool.start()
 
     def dispatch_msg(self, msg):
@@ -88,6 +111,9 @@ class MessageDispatcher(object):
                 return
 
         if username == botname or username == u'slackbot':
+            return
+
+        if username in EXCLUSION_LIST:
             return
 
         msg_respond_to = self.filter_text(msg)
