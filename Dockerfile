@@ -1,7 +1,9 @@
 FROM python:2.7.13-alpine
 
+
 COPY requirements.txt /tmp/requirements.txt
 RUN pip install -r /tmp/requirements.txt
+
 
 RUN apk add --update curl && \
     rm -rf /var/cache/apk/*
