@@ -1,5 +1,7 @@
-[![Build status](https://badge.buildkite.com/24dbdbb26de4b37239362e3d8fe079db3d897b9db9427825e3.svg)](https://buildkite.com/myob/ops-slackbot)
-       
+# Gus Bot
+
+[![Build status](https://badge.buildkite.com/136ac15e403f9d3be9d1dd3910781e553a17a63b4c44866346.svg)](https://buildkite.com/myob/ops-slackbot)
+
 A chat bot for [Slack](https://slack.com) inspired by [llimllib/limbo](https://github.com/llimllib/limbo) and [will](https://github.com/skoczen/will).
 
 ## Features
