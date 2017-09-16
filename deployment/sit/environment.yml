@@ -5,4 +5,5 @@ metadata:
   namespace: platform-enablement
 data:
   KMS_ENCRYPTED_API_TOKEN: "AQICAHjiwDqq3eZ+u3RGjFvRAvxv6bKgyQO0WPel6wkQbWsgcAHZsEVkGRH0wA2gb0GrRnFyAAAAiTCBhgYJKoZIhvcNAQcGoHkwdwIBADByBgkqhkiG9w0BBwEwHgYJYIZIAWUDBAEuMBEEDOmWj55sYpQtP6eWSQIBEIBFCtL50NYf+Um9x4ZrImYq7a2JD4Gng9ARATTXXPjcBRdgVbryVDez3IN1YtG5n6dpR9zGGZUFtpFC7tKRsHTJHet93CxV"
-
+  DEFAULT_REPLY: "I don't know what to say :quacky:"
+  EXCLUSION_LIST: "aishawilson, dan.harper, dedelala, ians, jordan.cleal, kerry.wang, treach, paul.borg, paul.vandevreede, pj, pjmichael, shane.corcoran, songjin_myob, gus, marius.nel, mel, orlando, mike.somogyi"

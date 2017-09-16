@@ -33,9 +33,6 @@ effect.
 # BOT_ICON = 'http://lorempixel.com/64/64/abstract/7/'
 # BOT_EMOJI = ':godmode:'
 
-'''Specify a different reply when the bot is messaged with no matching cmd'''
-DEFAULT_REPLY = "Sorry I don't have an answer for that.."
-
 for key in os.environ:
     if key[:9] == 'SLACKBOT_':
         name = key[9:]
@@ -55,4 +52,8 @@ try:
 except NameError:
     pass
 
+'''Specify a different reply when the bot is messaged with no matching cmd'''
+DEFAULT_REPLY = os.environ['DEFAULT_REPLY']
 API_TOKEN = os.environ['API_TOKEN']
+EXCLUSION_LIST = os.environ["EXCLUSION_LIST"].split(', ')
+
