@@ -77,6 +77,7 @@ class MessageDispatcher(object):
         return responded
 
     def _on_new_message(self, msg):
+
         # ignore edits
         subtype = msg.get('subtype', '')
         if subtype == u'message_changed':
@@ -92,7 +93,9 @@ class MessageDispatcher(object):
             else:
                 return
 
+        print('this username', username)
         if username == botname or username == u'slackbot':
+        # ignore msg originated from the Bot himself.
             return
 
         if username in EXCLUSION_LIST:
@@ -115,8 +118,10 @@ class MessageDispatcher(object):
         channel = msg['channel']
         bot_name = self._get_bot_name()
         bot_id = self._get_bot_id()
+        print(full_text)
         m = self.AT_MESSAGE_MATCHER.match(full_text)
-
+        print('channel=', channel[0])
+        print('m=', m)
         if channel[0] == 'C' or channel[0] == 'G':
             if not m:
                 return
@@ -128,11 +133,14 @@ class MessageDispatcher(object):
             text = matches.get('text')
             alias = matches.get('alias')
 
+            print('atuser username, text, alias',atuser, username, text, alias)
+            print('bot_id', bot_id)
             if alias:
                 atuser = bot_id
 
             if atuser != bot_id and username != bot_name:
                 # a channel message at other user
+                print('a channel message at other user, returning...')
                 return
 
             logger.debug('got an AT message: %s', text)
@@ -148,6 +156,7 @@ class MessageDispatcher(object):
             for event in events:
                 event_type = event.get('type')
                 if event_type == 'message':
+                    print('processing recognised msg event...')
                     self._on_new_message(event)
                 elif event_type in ['channel_created', 'channel_rename',
                                     'group_joined', 'group_rename',

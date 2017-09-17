@@ -2,7 +2,7 @@
 
 import os
 
-DEBUG = False
+DEBUG = True
 
 PLUGINS = [
     'slackbot.plugins',
@@ -56,4 +56,3 @@ except NameError:
 DEFAULT_REPLY = os.environ['DEFAULT_REPLY']
 API_TOKEN = os.environ['API_TOKEN']
 EXCLUSION_LIST = os.environ["EXCLUSION_LIST"].split(', ')
-
