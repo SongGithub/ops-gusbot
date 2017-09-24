@@ -2,17 +2,33 @@
 steps:
   - name: "docker: publish docker image"
     command: deployment/bin/publish ${BUILDKITE_BUILD_NUMBER}.${BUILDKITE_COMMIT:0:5}
-    branches: master
     agents:
       queue: cluster-preprod
 
-  - wait
+  - wait:
 
-  - name: ":aws: Deploy to SIT"
-    command: deployment/bin/deploy_aws sit
-    branches: master
+  - name: ":aws: IAM Policies"
+    command: deployment/bin/deploy_aws dev
     agents:
       queue: cluster-preprod
+
+  - wait:
+
+  - name: ":k8s: Deploy to Preprod Kubernetes"
+    command: APPLICATION_VERSION=${BUILDKITE_BUILD_NUMBER}.${BUILDKITE_COMMIT:0:5} deployment/bin/deploy
+    agents:
+      queue: cluster-preprod
+    env:
+      ENVIRONMENT: dev
+      APPLICATION_IMAGE: 693429498512.dkr.ecr.ap-southeast-2.amazonaws.com/platform-enablement/gusbot
+
+  - block: 'promote to Prod?'
+
+  - name: ":aws: IAM Policies"
+    command: deployment/bin/deploy_aws prod
+    branches: master
+    agents:
+      queue: cluster-prod
 
   - wait
 
@@ -20,7 +36,7 @@ steps:
     command: APPLICATION_VERSION=${BUILDKITE_BUILD_NUMBER}.${BUILDKITE_COMMIT:0:5} deployment/bin/deploy
     branches: master
     agents:
-      queue: cluster-preprod
+      queue: cluster-prod
     env:
-      ENVIRONMENT: sit
-      APPLICATION_IMAGE: 693429498512.dkr.ecr.ap-southeast-2.amazonaws.com/platform-enablement/gusbot #without version
+      ENVIRONMENT: prod
+      APPLICATION_IMAGE: 693429498512.dkr.ecr.ap-southeast-2.amazonaws.com/platform-enablement/gusbot
