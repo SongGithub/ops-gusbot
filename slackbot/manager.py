@@ -3,12 +3,12 @@
 import os
 import logging
 from glob import glob
-from six import PY2
 from importlib import import_module
+from six import PY2
 from slackbot import settings
 from slackbot.utils import to_utf8
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 class PluginsManager(object):
@@ -31,7 +31,7 @@ class PluginsManager(object):
             self._load_plugins(plugin)
 
     def _load_plugins(self, plugin):
-        logger.info('loading plugin "%s"', plugin)
+        LOGGER.info('loading plugin "%s"', plugin)
         path_name = None
 
         if PY2:
@@ -60,7 +60,7 @@ class PluginsManager(object):
                 import_module(module)
             except:
                 # TODO Better exception handling
-                logger.exception('Failed to import %s', module)
+                LOGGER.exception('Failed to import %s', module)
 
     def get_plugins(self, category, text):
         has_matching_plugin = False

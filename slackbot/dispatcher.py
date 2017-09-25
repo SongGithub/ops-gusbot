@@ -14,7 +14,7 @@ from slackbot import settings
 
 from slackbot.settings import EXCLUSION_LIST
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 class MessageDispatcher(object):
     def __init__(self, slackclient, plugins, errors_to):
@@ -31,16 +31,16 @@ class MessageDispatcher(object):
 
         alias_regex = ''
         if getattr(settings, 'ALIASES', None):
-            logger.info('using aliases %s', settings.ALIASES)
+            LOGGER.info('using aliases %s', settings.ALIASES)
             alias_regex = '|(?P<alias>{})'.format('|'.join([re.escape(s) for s in settings.ALIASES.split(',')]))
 
         self.AT_MESSAGE_MATCHER = re.compile(r'^(?:\<@(?P<atuser>\w+)\>:?|(?P<username>\w+):{}) ?(?P<text>.*)$'.format(alias_regex))
 
     def start(self):
-        logger.info(settings.DEFAULT_REPLY)
-        logger.info("Users in exclusions list include:")
+        LOGGER.info(settings.DEFAULT_REPLY)
+        LOGGER.info("Users in exclusions list include:")
         for person in EXCLUSION_LIST:
-            logger.info("- " + person)
+            LOGGER.info("- " + person)
         self._pool.start()
 
     def dispatch_msg(self, msg):
@@ -59,7 +59,7 @@ class MessageDispatcher(object):
                 try:
                     func(Message(self._client, msg), *args)
                 except:
-                    logger.exception(
+                    LOGGER.exception(
                         'failed to handle message %s with plugin "%s"',
                         msg['text'], func.__name__)
                     reply = u'[{}] I had a problem handling "{}"\n'.format(
@@ -143,7 +143,7 @@ class MessageDispatcher(object):
                 print('a channel message at other user, returning...')
                 return
 
-            logger.debug('got an AT message: %s', text)
+            LOGGER.debug('got an AT message: %s', text)
             msg['text'] = text
         else:
             if m:

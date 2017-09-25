@@ -1,18 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-import imp
-import importlib
 import logging
 import re
 import time
-from glob import glob
 from six.moves import _thread
 from slackbot import settings
 from slackbot.manager import PluginsManager
 from slackbot.slackclient import SlackClient
 from slackbot.dispatcher import MessageDispatcher
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 class Bot(object):
@@ -42,19 +39,10 @@ class Bot(object):
             time.sleep(30 * 60)
             self._client.ping()
 
-
-def respond_to(matchstr, flags=0):
-    def wrapper(func):
-        PluginsManager.commands['respond_to'][
-            re.compile(matchstr, flags)] = func
-        logger.info('registered respond_to plugin "%s" to "%s"', func.__name__,
-                    matchstr)
-        return func
-
-    return wrapper
-
-
 def listen_to(matchstr, flags=0):
+    """
+    listen_to listens to a regex so the bot can take
+    """
     def wrapper(func):
         PluginsManager.commands['listen_to'][
             re.compile(matchstr, flags)] = func
@@ -63,7 +51,6 @@ def listen_to(matchstr, flags=0):
         return func
 
     return wrapper
-
 
 # def default_reply(matchstr=r'^.*$', flags=0):
 def default_reply(*args, **kwargs):
