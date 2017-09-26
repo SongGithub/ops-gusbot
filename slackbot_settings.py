@@ -2,15 +2,15 @@
 
 import os
 
-DEBUG = True
+DEBUG = False
 
 PLUGINS = [
-    'slackbot.plugins',
+    'plugins.at_here'
 ]
 
 ERRORS_TO = None
 
-# API_TOKEN = '###token###'
+# API_TOKEN = 'some-token'
 
 '''
 Setup a comma delimited list of aliases that the bot will respond to.
@@ -33,6 +33,9 @@ effect.
 # BOT_ICON = 'http://lorempixel.com/64/64/abstract/7/'
 # BOT_EMOJI = ':godmode:'
 
+'''Specify a different reply when the bot is messaged with no matching cmd'''
+DEFAULT_REPLY = None
+
 for key in os.environ:
     if key[:9] == 'SLACKBOT_':
         name = key[9:]
@@ -51,8 +54,3 @@ try:
     DEFAULT_REPLY = default_reply
 except NameError:
     pass
-
-'''Specify a different reply when the bot is messaged with no matching cmd'''
-DEFAULT_REPLY = os.environ['DEFAULT_REPLY']
-API_TOKEN = os.environ['API_TOKEN']
-EXCLUSION_LIST = os.environ["EXCLUSION_LIST"].split(', ')

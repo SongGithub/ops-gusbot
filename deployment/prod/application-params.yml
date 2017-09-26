@@ -1,5 +1,0 @@
----
-# DNS_RECORD: <dns-record>
-# SSL_SECRET: <ssl-secret>
-MIN_REPLICA_COUNT: "1"
-MAX_REPLICA_COUNT: "1"

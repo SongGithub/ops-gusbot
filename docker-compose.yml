@@ -1,0 +1,15 @@
+version: "2.1"
+
+services:
+  helm:
+    image: lachlanevenson/k8s-helm:v2.6.1
+    volumes:
+      - "${HOME}/.helm/:/root/.helm"
+      - "${HOME}/.kube/:/root/.kube"
+      - .:/app
+    working_dir: /app
+
+  aws:
+    image: cgswong/aws:aws
+    volumes:
+      - "${HOME}/.aws/:/root/.aws"

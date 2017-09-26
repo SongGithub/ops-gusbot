@@ -1,6 +1,0 @@
-#! /bin/bash
-
-set -e
-
-echo "+++ Building application docker image..."
-docker build -t ${1:-dev} .

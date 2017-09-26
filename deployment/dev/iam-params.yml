@@ -1,3 +1,0 @@
----
-ClusterNodeRole: arn:aws:iam::967276157215:role/nodes.jupiter-preprod.platform.myob.com
-KmsArn: arn:aws:kms:ap-southeast-2:693429498512:key/532ee167-2847-4f33-a8ac-268c778e7ece
