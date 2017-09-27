@@ -1,1 +1,2 @@
 slackbot>=0.5.1,<=1
+sqlalchemy>=1.1.14,<=2

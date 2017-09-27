@@ -2,7 +2,9 @@
 This module adds responses to @here and @channel
 """
 import logging
-from slackbot.bot import listen_to
+from slackbot.bot import listen_to, respond_to
+from model.database import SESSION
+from model.channel import Channel
 
 LOGGER = logging.getLogger(__name__)
 
@@ -57,9 +59,28 @@ def at_here(message, at_symbol=None):
         in_thread=True
     )
 
+@respond_to('^list$')
+def list_users(msg):
+    """List all users in DB"""
+    LOGGER.info("List Users :: %s", msg.body['user'])
+    reply = "```\n"
+    reply += "{:^10} | {:^10}\n".format("Channel", "User")
+    reply += "======================\n"
+    for chan in Channel.query.all():
+        reply += "{0.name:^10} | {0.user:^10}\n".format(chan)
+    reply += "```"
+    msg.reply(reply)
 
-# @listen_to('^gus-bot configure (.*)')
-# def configure(message, action=None):
-#     """configure"""
-#     LOGGER.info(action)
-#     message.reply(message.body['text'], in_thread=True)
+@respond_to('^add.*')
+@respond_to('^add (.*) to (.*)')
+def add_user(msg, user=None, channel=None):
+    """ Adding a new exclusion list """
+    if user is None or channel is None:
+        msg.reply("Usage: `add @user to #channel`")
+        return
+    
+    LOGGER.info("Add User :: %s :: %s to %s ", msg.body['user'], user, channel)
+    SESSION.add(Channel(name=channel, user=user))
+    SESSION.commit()
+    msg.reply("User added to channel exclusion list")
+

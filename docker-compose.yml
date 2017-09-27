@@ -13,3 +13,11 @@ services:
     image: cgswong/aws:aws
     volumes:
       - "${HOME}/.aws/:/root/.aws"
+
+  app:
+    build: 
+      context: .
+    volumes: 
+    - .:/opt/ops-gus-bot
+    environment: 
+    - SLACKBOT_API_TOKEN
