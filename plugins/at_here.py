@@ -1,5 +1,5 @@
 """
-This module add responses to @here and @channel
+This module adds responses to @here and @channel
 """
 import logging
 from slackbot.bot import listen_to
