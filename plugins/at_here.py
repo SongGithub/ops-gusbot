@@ -2,39 +2,12 @@
 This module adds responses to @here and @channel
 """
 import logging
+import re
 from slackbot.bot import listen_to, respond_to
 from model.database import SESSION
 from model.channel import Channel
 
 LOGGER = logging.getLogger(__name__)
-
-EXCLUSION_LIST = {
-    #tr-platform-enable
-    "C3F2M5NFP": [
-        "U6DL2AHHD", # Aaron Cai
-        "U0SMLP1PG", # Anthony Sceresini
-        "U69G25C5Q", # Dede Lamb
-        "U0QNE929J", # Gustavo Hoirisch
-        "U0726J4F8", # Ian Stahnke
-        "U72UJJR17", # John Contad
-        "U07DUSPH6", # Kerry Wang
-        "U3S3SQ96D", # Marius Nel
-        "U4KRBKXJ4", # Mel Boyce
-        "U0GRQSP5F", # Orlando Erazo
-        "U2T5APLV7", # Paul Van de Vreede
-        "U053PKM7X", # Philip Michael
-        "U6DE5PBDL", # Prateek Nayak
-        "U0FJ8MKAA", # Shane Corcoran
-        "U5K4N2W4F", # Song Jin
-        "U0ZFHNRK2", # Utkarsh Doshi
-        "U665SA8SV", # Aisha Wilson
-        "U053V2CBV" # Jonathan Broome
-    ],
-    #gus-bot-provingground
-    "C745V5TD0": [
-        "U5K4N2W4F" # Song Jin
-    ]
-}
 
 @listen_to('.*(<!here>|<!channel>).*')
 def at_here(message, at_symbol=None):
@@ -45,29 +18,32 @@ def at_here(message, at_symbol=None):
 
     def at_here_log(at_symbol, channel, msg, user, skip="NO_SKIP"):
         """ log line for at_here plugin """
-        LOGGER.info("[%s] %s: %s [from %s] [%s]", at_symbol, channel, msg, user, skip)
+        LOGGER.info("HERE :: [%s] %s: %s [from %s] [%s]", at_symbol, channel, msg, user, skip)
 
-    if message.body['user'] in EXCLUSION_LIST[channel]:
+    if is_allowed(user, channel):
         at_here_log(at_symbol, channel, message.body['text'], user, "SKIP")
         return
 
     at_here_log(at_symbol, channel, message.body['text'], user, "NO_SKIP")
-    message.react('police-gus')
-    message.reply(
-        "Please don't use _{}_. Check out our Slacktiquete: \
-        https://myob.slack.com/archives/C3F2M5NFP/p1498438403848842".format(at_symbol),
-        in_thread=True
-    )
+    try:
+        message.react('police-gus')
+        message.reply(
+            "Please don't use _{}_. Check out our Slacktiquete: \
+            https://myob.slack.com/archives/C3F2M5NFP/p1498438403848842".format(at_symbol),
+            in_thread=True
+        )
+    except:
+        pass
 
 @respond_to('^list$')
 def list_users(msg):
     """List all users in DB"""
-    LOGGER.info("List Users :: %s", msg.body['user'])
+    LOGGER.info("LIST :: %s", msg.body['user'])
     reply = "```\n"
     reply += "{:^10} | {:^10}\n".format("Channel", "User")
     reply += "======================\n"
     for chan in Channel.query.all():
-        reply += "{0.name:^10} | {0.user:^10}\n".format(chan)
+        reply += "{0.channel_name:^10} | {0.user_id:^10}\n".format(chan)
     reply += "```"
     msg.reply(reply)
 
@@ -78,9 +54,38 @@ def add_user(msg, user=None, channel=None):
     if user is None or channel is None:
         msg.reply("Usage: `add @user to #channel`")
         return
-    
-    LOGGER.info("Add User :: %s :: %s to %s ", msg.body['user'], user, channel)
-    SESSION.add(Channel(name=channel, user=user))
-    SESSION.commit()
-    msg.reply("User added to channel exclusion list")
 
+    match = parse_channel_identifier(channel)
+    LOGGER.info("ADD :: %s :: %s to %s ", msg.body['user'], user, channel)
+    if not match:
+        LOGGER.info("ADD :: Bailing because failed to parse channel name and id: %s", channel)
+        return
+
+    LOGGER.info("ADD :: PARSED :: id: '%s', name: '%s'", match.group(1), match.group(2))
+
+    SESSION().add(Channel(channel_id=match.group(1), channel_name=match.group(2), user_id=user))
+    SESSION().commit()
+    msg.reply("User {} added to {} exclusion list".format(user, channel))
+
+def parse_channel_identifier(channel):
+    """
+    given a string like so "<#C04UB2PBB|ex-ea>",
+    parse the ID (C04UB2PBB) and name (ex-ea) out of it
+    """
+    return re.search(r"<#(C[A-Z0-9]*?)\|([a-zA-Z0-9\-]*?)>", channel)
+
+def is_allowed(user, channel):
+    """
+    given a user id and channel id, check if it is in the exclusion list in the DB
+    """
+    query = Channel.query.filter(
+        Channel.channel_id == "{}".format(channel),
+        Channel.user_id == "{}".format(user))
+    count = query.count()
+    print query
+
+    LOGGER.info("COUNT :: %s :: %s :: %s", user, channel, count)
+
+    if count > 0:
+        return True
+    return False
