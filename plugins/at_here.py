@@ -40,23 +40,22 @@ def list_users(msg):
     """List all users in DB"""
     LOGGER.info("LIST :: %s", msg.body['user'])
     reply = "```\n"
-    reply += "{:^10} | {:^10}\n".format("Channel", "User")
+    reply += "{:^20} | {:^20}\n".format("User", "Channel")
     reply += "======================\n"
     for chan in Channel.query.all():
-        reply += "{0.channel_name:^10} | {0.user_id:^10}\n".format(chan)
+        reply += "{0.user_id:^20} | {0.channel_name:^20}\n".format(chan)
     reply += "```"
     msg.reply(reply)
 
-@respond_to('^add.*')
 @respond_to('^add (.*) to (.*)')
 def add_user(msg, user=None, channel=None):
-    """ Adding a new exclusion list """
+    """ Adding a new whitelist rule """
     if user is None or channel is None:
         msg.reply("Usage: `add @user to #channel`")
         return
 
-    match = parse_channel_identifier(channel)
     LOGGER.info("ADD :: %s :: %s to %s ", msg.body['user'], user, channel)
+    match = parse_channel_identifier(channel)
     if not match:
         LOGGER.info("ADD :: Bailing because failed to parse channel name and id: %s", channel)
         return
@@ -65,7 +64,32 @@ def add_user(msg, user=None, channel=None):
 
     SESSION().add(Channel(channel_id=match.group(1), channel_name=match.group(2), user_id=user))
     SESSION().commit()
-    msg.reply("User {} added to {} exclusion list".format(user, channel))
+    msg.reply("User {} added to {} whitelist list".format(user, channel))
+
+@respond_to('^remove (.*) from (.*)')
+def remove_user(msg, user=None, channel=None):
+    """ Removing user from whitelist """
+    if user is None or channel is None:
+        msg.reply("Usage: `remove @user from #channel`")
+        return
+
+    LOGGER.info("REMOVE :: %s :: %s from %s ", msg.body['user'], user, channel)
+    match = parse_channel_identifier(channel)
+    if not match:
+        LOGGER.info("REMOVE :: Bailing because failed to parse channel name and id: %s", channel)
+        return
+
+    LOGGER.info("REMOVE :: PARSED :: id: '%s', name: '%s'", match.group(1), match.group(2))
+    records = Channel.query.filter_by(channel_id=match.group(1), user_id=user).all()
+    if records is None:
+        msg.reply("unable to delete from whitelist")
+        return
+
+    for record in records:
+        SESSION().delete(record)
+    SESSION().commit()
+    msg.reply("User {} deleted from {} whitelist".format(user, channel))
+
 
 def parse_channel_identifier(channel):
     """
@@ -74,17 +98,15 @@ def parse_channel_identifier(channel):
     """
     return re.search(r"<#(C[A-Z0-9]*?)\|([a-zA-Z0-9\-]*?)>", channel)
 
-def is_allowed(user, channel):
+def is_allowed(user_id, channel_id):
     """
-    given a user id and channel id, check if it is in the exclusion list in the DB
+    given a user id and channel id, check if it is in the whitelist in the DB
     """
-    query = Channel.query.filter(
-        Channel.channel_id == "{}".format(channel),
-        Channel.user_id == "{}".format(user))
-    count = query.count()
-    print query
+    count = Channel.query \
+        .filter(Channel.channel_id == channel_id) \
+        .filter(Channel.user_id == "<@"+user_id+">").count()
 
-    LOGGER.info("COUNT :: %s :: %s :: %s", user, channel, count)
+    LOGGER.info("COUNT :: %s :: %s :: %s", user_id, channel_id, count)
 
     if count > 0:
         return True
