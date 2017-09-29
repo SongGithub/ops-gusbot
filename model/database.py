@@ -7,9 +7,9 @@ from sqlalchemy.ext.declarative import declarative_base
 
 LOGGER = logging.getLogger(__name__)
 
-DB = os.getenv("SLACKBOT_DATABASE", "sqlite:///gus-bot.db")
+DB = os.getenv("SLACKBOT_DATABASE", "gus-bot.db")
 
-ENGINE = create_engine(DB, convert_unicode=True)
+ENGINE = create_engine("sqlite:///"+DB, convert_unicode=True)
 SESSION = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=ENGINE))
 
 BASE = declarative_base()

@@ -4,7 +4,7 @@ from model.database import BASE
 
 class Channel(BASE):
     """TODO"""
-    __tablename__ = 'channel'
+    __tablename__ = 'whitelist_rules'
 
     primary_key     = Column(Integer, primary_key=True)
     channel_name    = Column(String(50))
