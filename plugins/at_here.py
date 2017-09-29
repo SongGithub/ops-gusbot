@@ -76,6 +76,24 @@ def remove_user(msg, user, channel_id, channel_name):
     SESSION().commit()
     msg.reply("User {} deleted from {} whitelist.".format(user, channel_name))
 
+@respond_to(r'^sudo rm -rf (<@U[A-Z0-9]+>)')
+def remove_from_all(msg, user):
+    """
+    Remove user from all whitelist rules
+    Usage: sudo rm -rf @user
+    """
+    LOGGER.info("SUDO RM :: %s :: Removing %s from everything", msg.body['user'], user)
+    rules = Channel.query.filter_by(user_id=user).all()
+    if not rules:
+        msg.reply("No rules for this user")
+        return
+
+    for rule in rules:
+        SESSION().delete(rule)
+
+    SESSION().commit()
+    msg.reply("Deleted %d rules for %s" %(len(rules), user))
+
 def is_allowed(user_id, channel_id):
     """
     given a user id and channel id, check if it is in the whitelist in the DB
