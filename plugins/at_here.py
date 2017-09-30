@@ -1,38 +1,12 @@
 """
-This module add responses to @here and @channel
+This module adds responses to @here and @channel
 """
 import logging
-from slackbot.bot import listen_to
+from slackbot.bot import listen_to, respond_to
+from model.database import SESSION
+from model.channel import Channel
 
 LOGGER = logging.getLogger(__name__)
-
-EXCLUSION_LIST = {
-    #tr-platform-enable
-    "C3F2M5NFP": [
-        "U6DL2AHHD", # Aaron Cai
-        "U0SMLP1PG", # Anthony Sceresini
-        "U69G25C5Q", # Dede Lamb
-        "U0QNE929J", # Gustavo Hoirisch
-        "U0726J4F8", # Ian Stahnke
-        "U72UJJR17", # John Contad
-        "U07DUSPH6", # Kerry Wang
-        "U3S3SQ96D", # Marius Nel
-        "U4KRBKXJ4", # Mel Boyce
-        "U0GRQSP5F", # Orlando Erazo
-        "U2T5APLV7", # Paul Van de Vreede
-        "U053PKM7X", # Philip Michael
-        "U6DE5PBDL", # Prateek Nayak
-        "U0FJ8MKAA", # Shane Corcoran
-        "U5K4N2W4F", # Song Jin
-        "U0ZFHNRK2", # Utkarsh Doshi
-        "U665SA8SV", # Aisha Wilson
-        "U053V2CBV" # Jonathan Broome
-    ],
-    #gus-bot-provingground
-    "C745V5TD0": [
-        "U5K4N2W4F" # Song Jin
-    ]
-}
 
 @listen_to('.*(<!here>|<!channel>).*')
 def at_here(message, at_symbol=None):
@@ -43,9 +17,9 @@ def at_here(message, at_symbol=None):
 
     def at_here_log(at_symbol, channel, msg, user, skip="NO_SKIP"):
         """ log line for at_here plugin """
-        LOGGER.info("[%s] %s: %s [from %s] [%s]", at_symbol, channel, msg, user, skip)
+        LOGGER.info("HERE :: [%s] %s: %s [from %s] [%s]", at_symbol, channel, msg, user, skip)
 
-    if message.body['user'] in EXCLUSION_LIST[channel]:
+    if is_allowed(user, channel):
         at_here_log(at_symbol, channel, message.body['text'], user, "SKIP")
         return
 
@@ -57,9 +31,61 @@ def at_here(message, at_symbol=None):
         in_thread=True
     )
 
+@respond_to('^list$')
+def list_users(msg):
+    """
+    List all whitelist rules
+    Usage: `list`
+    """
+    LOGGER.info("LIST :: %s", msg.body['user'])
+    reply = "```\n"
+    for chan in Channel.query.order_by(Channel.user_id.asc()).all():
+        reply += "{0.user_id:^20} | {0.channel_name:^20}\n".format(chan)
+    reply += "```"
+    msg.reply(reply)
 
-# @listen_to('^gus-bot configure (.*)')
-# def configure(message, action=None):
-#     """configure"""
-#     LOGGER.info(action)
-#     message.reply(message.body['text'], in_thread=True)
+@respond_to(r'^add (<@U[A-Z0-9]+>) to <#(C[A-Z0-9]*?)\|([a-zA-Z0-9\-]*?)>')
+def add_user(msg, user, channel_id, channel_name):
+    """
+    Add a user to a channel whitelist
+    Usage: `add @user to #channel`
+    """
+    LOGGER.info("ADD :: %s :: %s to %s ", msg.body['user'], user, channel_name)
+    records = Channel.query.filter_by(channel_id=channel_id, user_id=user).all()
+    if records:
+        msg.reply("Rule already exists.")
+        return
+
+    SESSION().add(Channel(channel_id=channel_id, channel_name=channel_name, user_id=user))
+    SESSION().commit()
+    msg.reply("User {} added to {} whitelist".format(user, channel_name))
+
+@respond_to(r'^remove (<@U[A-Z0-9]+>) from <#(C[A-Z0-9]*?)\|([a-zA-Z0-9\-]*?)>')
+def remove_user(msg, user, channel_id, channel_name):
+    """
+    Remove a user from a channel whitelist
+    Usage: `remove @user from #channel`
+    """
+    LOGGER.info("REMOVE :: %s :: %s from %s ", msg.body['user'], user, channel_name)
+    record = Channel.query.filter_by(channel_id=channel_id, user_id=user).first()
+    if not record:
+        msg.reply("Could not find whitelist rule.")
+        return
+
+    SESSION().delete(record)
+    SESSION().commit()
+    msg.reply("User {} deleted from {} whitelist.".format(user, channel_name))
+
+def is_allowed(user_id, channel_id):
+    """
+    given a user id and channel id, check if it is in the whitelist in the DB
+    """
+    count = Channel.query \
+        .filter(Channel.channel_id == channel_id) \
+        .filter(Channel.user_id == "<@"+user_id+">").count()
+
+    LOGGER.info("COUNT :: %s :: %s :: %s", user_id, channel_id, count)
+
+    if count > 0:
+        return True
+    return False
