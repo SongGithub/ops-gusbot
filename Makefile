@@ -23,7 +23,8 @@ deploy/dev:
 	${DCR} helm upgrade --install ops-gus-bot ./chart \
 		--tiller-namespace platform-enablement \
 		--namespace platform-enablement \
-		--set image.tag=${BUILD_TAG}
+		--set image.tag=${BUILD_TAG} \
+		--set build=${BUILDKITE_BUILD_NUMBER}
 
 deploy/prod:
 	@echo "+++ Deploy to prod"
@@ -31,7 +32,8 @@ deploy/prod:
 	${DCR} helm upgrade --install ops-gus-bot ./chart \
 		--tiller-namespace platform-enablement \
 		--namespace platform-enablement	\
-		--set image.tag=${BUILD_TAG}
+		--set image.tag=${BUILD_TAG} \
+		--set build="${BUILDKITE_BUILD_NUMBER}"
 
 ecr-login:
 	@echo "--- Docker login"
