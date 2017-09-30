@@ -58,7 +58,7 @@ def add_user(msg, user, channel_id, channel_name):
 
     SESSION().add(Channel(channel_id=channel_id, channel_name=channel_name, user_id=user))
     SESSION().commit()
-    msg.reply("User {} added to {} whitelist list".format(user, channel_name))
+    msg.reply("User {} added to {} whitelist".format(user, channel_name))
 
 @respond_to(r'^remove (<@U[A-Z0-9]+>) from <#(C[A-Z0-9]*?)\|([a-zA-Z0-9\-]*?)>')
 def remove_user(msg, user, channel_id, channel_name):
