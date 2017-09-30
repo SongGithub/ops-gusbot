@@ -19,12 +19,11 @@ def main():
     }
     logging.basicConfig(**log_config)
     logging.getLogger('requests.packages.urllib3.connectionpool').setLevel(logging.WARNING)
+    LOGGER = logging.getLogger(__name__)
+    LOGGER.info("Current Bot build number is: {}".format(os.getenv("SLACKBOT_VERSION")))
 
     # initialise the db
     model.database.init_db()
-
-    print("printing version number")
-    print(os.getenv("SLACKBOT_VERSION"))
     bot = Bot()
     bot.run()
 
