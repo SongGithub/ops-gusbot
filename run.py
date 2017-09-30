@@ -1,6 +1,7 @@
 """ This the start of the awesome GusBot """
 #!/usr/bin/env python
 
+import os
 import sys
 import logging
 import logging.config
@@ -22,6 +23,8 @@ def main():
     # initialise the db
     model.database.init_db()
 
+    print("printing version number")
+    print(os.getenv("SLACKBOT_VERSION"))
     bot = Bot()
     bot.run()
 
