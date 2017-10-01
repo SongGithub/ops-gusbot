@@ -20,6 +20,4 @@ def check_version(msg):
         + "and my reply was: "
         + reply)
 
-    msg.react('eyes')
-    msg.reply(reply,in_thread=True)
-    msg.react('white_check_mark')
+    msg.reply(reply,in_thread=False)
