@@ -15,9 +15,9 @@ services:
       - "${HOME}/.aws/:/root/.aws"
 
   app:
-    build: 
+    build:
       context: .
-    volumes: 
+    volumes:
     - .:/opt/ops-gus-bot
-    environment: 
+    environment:
     - SLACKBOT_API_TOKEN

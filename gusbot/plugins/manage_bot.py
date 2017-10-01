@@ -5,7 +5,9 @@ import os
 import logging
 from slackbot.bot import respond_to
 
+
 LOGGER = logging.getLogger(__name__)
+
 
 @respond_to('^version$')
 def check_version(msg):

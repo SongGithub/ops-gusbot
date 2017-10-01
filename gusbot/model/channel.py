@@ -1,6 +1,6 @@
 """TODO"""
 from sqlalchemy import Column, Integer, String
-from model.database import BASE
+from database import BASE
 
 class Channel(BASE):
     """TODO"""

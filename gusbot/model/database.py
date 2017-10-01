@@ -17,6 +17,6 @@ BASE.query = SESSION.query_property()
 
 def init_db():
     """Initialize database"""
-    import model.channel
+    import channel
     LOGGER.info("Initializing Dababase")
     BASE.metadata.create_all(bind=ENGINE)

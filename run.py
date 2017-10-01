@@ -7,7 +7,9 @@ import logging
 import logging.config
 from slackbot import settings
 from slackbot.bot import Bot
-import model.database
+# import gusbot.model.database
+from gusbot.model import channel, database
+from gusbot import model
 
 def main():
     """ start gus bot! """
