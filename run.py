@@ -1,4 +1,3 @@
-""" This the start of the awesome GusBot """
 #!/usr/bin/env python
 
 import sys
@@ -9,6 +8,7 @@ from slackbot.bot import Bot
 import model.database
 
 def main():
+    """ This the start of the awesome GusBot """
     """ start gus bot! """
     log_config = {
         'format': '[%(asctime)s] %(message)s',
