@@ -29,8 +29,11 @@ This project is written in python and run in Kubernetes. You can find more infor
 ## How to use
 
 - By default, no one is on the _White List_ which exempts Slack users from being policed by the _Gus Bot_. 
-- In Slack, talk to _Gus Bot_ directly to configure the _White list_. Common cmd are 
-
+- In Slack, talk to _Gus Bot_ directly to configure the _White list_. Common cmd are:
+  - list
+  - add @<slack-user> to #<channel>
+  - remove @<slack-user> to #<channel>
+  - sudo rm -rf @<slack-user>
 
 ## TODO/Wishlist:
 
