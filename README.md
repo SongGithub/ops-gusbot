@@ -37,5 +37,4 @@ This project is written in python and run in Kubernetes. You can find more infor
 
 ## TODO/Wishlist:
 
-- The Kube app could get secret from _AWS SSM/Parameter Store_
 - Add health check + Alerts in case the application suddenly stops working. 
