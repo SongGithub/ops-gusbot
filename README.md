@@ -22,6 +22,8 @@ This project is written in python and run in Kubernetes. You can find more infor
 - It is setup to be deployed in Buildkite pipeline by Helm.
 - __! Important__: There is one critical dependency that is NOT deployed automatically for security reasons. Once valid secret _SLACKBOT_API_TOKEN_ is not available to the app, there will be a warning in app's log `settings.API_TOKEN doesn't exist`. In this case, maintainers should:
   - login in to the cluster in CLI, i.e. `myob-auth k -e <env-slug>`
+  - run kube cmd to verify your secret `kubectl get secret ops-gus-bot -n platform-enablement`
+  - If there was a secret in k8s cluster, please run `kubectl delete secret ops-gus-bot -n platform-enablement` prior to run the next step
   - run kube cmd to upload your secret `kubectl create secret generic --from-literal=SLACKBOT_API_TOKEN=<raw slack api token> ops-gus-bot -n platform-enablement`
 
 ## TODO/Wishlist:
