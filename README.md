@@ -26,6 +26,12 @@ This project is written in python and run in Kubernetes. You can find more infor
   - If there was a secret in k8s cluster, please run `kubectl delete secret ops-gus-bot -n platform-enablement` prior to run the next step
   - run kube cmd to upload your secret `kubectl create secret generic --from-literal=SLACKBOT_API_TOKEN=<raw slack api token> ops-gus-bot -n platform-enablement`
 
+## How to use
+
+- By default, no one is on the _White List_ which exempts Slack users from being policed by the _Gus Bot_. 
+- In Slack, talk to _Gus Bot_ directly to configure the _White list_. Common cmd are 
+
+
 ## TODO/Wishlist:
 
 - The Kube app could get secret from _AWS SSM/Parameter Store_
