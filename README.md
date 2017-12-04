@@ -14,5 +14,17 @@ This plugin looks for `@here` and `@channel` messages and replies with a request
 
 This project is written in python and run in Kubernetes. You can find more information about it's deployment in [the pipeline](./.buildkite/pipeline.yml). There are 2 versions of the bot:
 
-- One is continuously deployed into the Dev cluster as `Gus Bot Edge` and it is used for testing purposes
-- The other is deployed on demand (by unblocking the pipeline) in the Prod cluster as `Gus Bot`
+- One is continuously deployed into the QA cluster(`qa-jupiter`) as `Gus Bot Edge` and it is used for testing purposes
+- The other is deployed on demand (by unblocking the pipeline) in the Prod cluster (`jupiter`) as `Gus Bot`
+
+## Deployment
+
+- It is setup to be deployed in Buildkite pipeline by Helm.
+- __! Important__: There is one critical dependency that is NOT deployed automatically for security reasons. Once valid secret _SLACKBOT_API_TOKEN_ is not available to the app, there will be a warning in app's log `settings.API_TOKEN doesn't exist`. In this case, maintainers should:
+  - login in to the cluster in CLI, i.e. `myob-auth k -e <env-slug>`
+  - run kube cmd to upload your secret `kubectl create secret generic --from-literal=SLACKBOT_API_TOKEN=<raw slack api token> ops-gus-bot -n platform-enablement`
+
+## TODO/Wishlist:
+
+- The Kube app could get secret from _AWS SSM/Parameter Store_
+- Add health check + Alerts in case the application suddenly stops working. 
