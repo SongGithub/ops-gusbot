@@ -5,7 +5,9 @@ import os
 DEBUG = False
 
 PLUGINS = [
-    'plugins.at_here'
+    'plugins.at_here',
+    'plugins.manage_bot',
+    'plugins.manage_user'
 ]
 
 ERRORS_TO = None

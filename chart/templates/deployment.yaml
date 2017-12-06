@@ -24,6 +24,8 @@ spec:
                 name: ops-gus-bot
                 optional: true
           env:
+          - name: SLACKBOT_VERSION
+            value: "{{ .Values.build }}"
           - name: SLACKBOT_DATABASE
             value: /var/lib/ops-gus-bot/database.db
           resources:
