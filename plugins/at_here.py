@@ -3,7 +3,7 @@ This module adds responses to @here and @channel
 """
 import logging
 from slackbot.bot import listen_to, respond_to
-
+from model.channel import Channel
 
 LOGGER = logging.getLogger(__name__)
 
