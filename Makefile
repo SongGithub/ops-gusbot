@@ -11,33 +11,33 @@ install:
 test:
 	@echo "+++ Testing all the things"
 
-publish: ecr-login
-	@echo "--- Building :docker: image [${BUILD_TAG}]"
-	docker build -t "${REPO_URL}:${BUILD_TAG}" .
-	@echo "+++ Publishing :docker: image [${BUILD_TAG}]"
-	docker push "${REPO_URL}:${BUILD_TAG}"
+# publish: ecr-login
+# 	@echo "--- Building :docker: image [${BUILD_TAG}]"
+# 	docker build -t "${REPO_URL}:${BUILD_TAG}" .
+# 	@echo "+++ Publishing :docker: image [${BUILD_TAG}]"
+# 	docker push "${REPO_URL}:${BUILD_TAG}"
 
-deploy/dev:
-	@echo "+++ Deploy to preprod"
-	${DCR} helm init --client-only --tiller-namespace platform-enablement
-	${DCR} helm upgrade --install ops-gus-bot ./chart \
-		--tiller-namespace platform-enablement \
-		--namespace platform-enablement \
-		--set image.tag=${BUILD_TAG} \
-		--set build=${BUILDKITE_BUILD_NUMBER}
+# deploy/dev:
+# 	@echo "+++ Deploy to preprod"
+# 	${DCR} helm init --client-only --tiller-namespace platform-enablement
+# 	${DCR} helm upgrade --install ops-gus-bot ./chart \
+# 		--tiller-namespace platform-enablement \
+# 		--namespace platform-enablement \
+# 		--set image.tag=${BUILD_TAG} \
+# 		--set build=${BUILDKITE_BUILD_NUMBER}
 
-deploy/prod:
-	@echo "+++ Deploy to prod"
-	${DCR} helm init --client-only --tiller-namespace platform-enablement
-	${DCR} helm upgrade --install ops-gus-bot ./chart \
-		--tiller-namespace platform-enablement \
-		--namespace platform-enablement	\
-		--set image.tag=${BUILD_TAG} \
-		--set build="${BUILDKITE_BUILD_NUMBER}"
+# deploy/prod:
+# 	@echo "+++ Deploy to prod"
+# 	${DCR} helm init --client-only --tiller-namespace platform-enablement
+# 	${DCR} helm upgrade --install ops-gus-bot ./chart \
+# 		--tiller-namespace platform-enablement \
+# 		--namespace platform-enablement	\
+# 		--set image.tag=${BUILD_TAG} \
+# 		--set build="${BUILDKITE_BUILD_NUMBER}"
 
-ecr-login:
-	@echo "--- Docker login"
-	${DCR} aws ecr get-login \
-	      --no-include-email \
-	      --registry-ids ${AWS_ACCOUNT_ID} \
-	      --region ap-southeast-2 | tr -d '\r' | bash
+# ecr-login:
+# 	@echo "--- Docker login"
+# 	${DCR} aws ecr get-login \
+# 	      --no-include-email \
+# 	      --registry-ids ${AWS_ACCOUNT_ID} \
+# 	      --region ap-southeast-2 | tr -d '\r' | bash

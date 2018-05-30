@@ -1,32 +1,43 @@
 ---
 steps:
   # unit tests
-  - command: make test
-    label: ':hammer:'
+  - label: ':hammer:'
+    command: make test
     agents:
-      queue: central-dev
+      queue: 'pe-dev-dflt'
 
-  # publish image
-  - command: make publish
-    label: ':docker:'
+  - label: 'build and publish Docker image for the demo app'
+    command: './deployment/bin/build_publish.sh ${BUILDKITE_BUILD_NUMBER}'
     agents:
-      queue: central-dev
+      queue: 'pe-dev-dflt'
 
   - wait:
 
-  # deploy to preprod
-  - command: make deploy/dev
-    label: ':shipit: [DEV]'
+  - label: ':kubernetes: Deploy to SIT'
+    # ${BUILDKITE_BUILD_NUMBER} should be a valid Docker image tag available in the
+    # Docker image repository mentioned in the deployment file.
+    command:  'deployment/bin/deploy.sh dev ${BUILDKITE_BUILD_NUMBER}'
+    branches: 'master'
     agents:
-      queue: central-dev
+      # your team's queue
+      queue: 'pe-dev-dflt'
 
-  - block: 'Deploy to prod?'
-    branches: master
+    # after Docker images have been build, and you are happy with its behaviour
+    # on SIT env, it is time to promote the very same artifact to PROD env.
+  - block: ":hurtrealbad: deploy PRE-PROD??"
+    branches: 'master'
 
-  # deploy to prod
-  - command: make deploy/prod
-    label: ':shipit: [PROD]'
-    branches: master
+  - label: ':kubernetes: Deploy to PRE-PROD'
+    command:  'deployment/bin/deploy.sh jupiter-preprod ${BUILDKITE_BUILD_NUMBER}'
+    branches: 'master'
     agents:
-      queue: central-prod
+      queue: 'cluster-sit-dflt'
 
+  - block: ":godmode: deploy PROD??"
+    branches: 'master'
+
+  - label: ':kubernetes: Deploy to PROD'
+    command:  'deployment/bin/deploy.sh jupiter ${BUILDKITE_BUILD_NUMBER}'
+    branches: 'master'
+    agents:
+      queue: 'cluster-prod-dflt'

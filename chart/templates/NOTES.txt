@@ -1,1 +1,0 @@
-1. welcome to gus bot in k8s

@@ -1,0 +1,5 @@
+---
+repo: "ops-gusbot"
+name: "ops-gus-bot"
+namespace: "platform-enablement"
+dockerImage: "693429498512.dkr.ecr.ap-southeast-2.amazonaws.com/platform-enablement/gusbot"

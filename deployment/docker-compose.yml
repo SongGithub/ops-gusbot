@@ -1,0 +1,30 @@
+version: "2.1"
+services:
+  kubectl:
+    image: lachlanevenson/k8s-kubectl:v1.8.10
+    working_dir: /app
+    volumes:
+      - ".:/app"
+      - "$HOME/.kube:/root/.kube"
+
+  aws-jq:
+    image: pebbletech/docker-aws-cli
+    working_dir: /app
+    volumes:
+      - "$HOME/.kube:/root/.kube"
+      - "$HOME/.aws:/root/.aws"
+      - ".:/app"
+    environment:
+      - AWS_DEFAULT_REGION=ap-southeast-2
+
+  ktmpl:
+    image: jimmycuadra/ktmpl:0.8.0
+    working_dir: /app
+    volumes:
+      - ".:/app"
+
+  yaml2json:
+    image: simplealpine/yaml2json:latest
+    working_dir: /app
+    volumes:
+      - ".:/app"
