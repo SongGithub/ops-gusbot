@@ -1,0 +1,40 @@
+---
+kind: "Template"
+apiVersion: "v1"
+metadata:
+  name: "PV claim"
+  annotations:
+    description: "Kubernetes PVC Template"
+labels:
+  template: "PVC"
+objects:
+
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      labels:
+        app: $(name)
+        release: $(release)
+      name: $(name)
+      namespace: $(namespace)
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 1Gi
+      storageClassName: gp2
+
+parameters:
+  - name: "name"
+    description: "app name"
+    required: true
+    parameterType: "string"
+  - name: "namespace"
+    description: "kube namespace"
+    required: true
+    parameterType: "string"
+  - name: "release"
+    description: "Kube app version"
+    required: true
+    parameterType: "string"

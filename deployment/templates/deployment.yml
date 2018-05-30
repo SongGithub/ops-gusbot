@@ -1,0 +1,85 @@
+---
+kind: "Template"
+apiVersion: "v1"
+metadata:
+  name: "Deployment"
+  annotations:
+    description: "Kubernetes Deployment Template"
+labels:
+  template: "Deployment"
+objects:
+
+  - kind: Deployment
+    apiVersion: apps/v1beta2
+    metadata:
+      labels:
+        app: $(name)
+        release: $(release)
+      name: $(name)
+      namespace: $(namespace)
+    spec:
+      replicas: 1
+      revisionHistoryLimit: 2
+      selector:
+          matchLabels:
+            app: $(name)
+            release: $(release)
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxUnavailable: 0
+          maxSurge: 100%
+      template:
+        metadata:
+          labels:
+            app: $(name)
+            release: $(release)
+        spec:
+          containers:
+            - name: $(name)
+              image: $(dockerImage):$(containerTag)
+              imagePullPolicy: Always
+              envFrom:
+                - secretRef:
+                    name: ops-gus-bot
+                    optional: true
+              env:
+              - name: SLACKBOT_VERSION
+                value: $(containerTag)
+              - name: SLACKBOT_DATABASE
+                value: /var/lib/ops-gus-bot/database.db
+              resources:
+                limits:
+                  cpu: 250m
+                  memory: 1000Mi
+                requests:
+                  cpu: 100m
+                  memory: 128Mi
+              volumeMounts:
+              - name: data
+                mountPath: /var/lib/ops-gus-bot/
+          volumes:
+          - name: data
+            persistentVolumeClaim:
+              claimName: $(name)
+parameters:
+  - name: "name"
+    description: "app name"
+    required: true
+    parameterType: "string"
+  - name: "namespace"
+    description: "kube namespace"
+    required: true
+    parameterType: "string"
+  - name: "dockerImage"
+    description: "Kube demo dockerImage"
+    required: true
+    parameterType: "string"
+  - name: "containerTag"
+    description: "Kube demo version"
+    required: true
+    parameterType: "string"
+  - name: "release"
+    description: "Kube app version"
+    required: true
+    parameterType: "string"
