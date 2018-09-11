@@ -8,36 +8,29 @@ steps:
 
   - label: 'build and publish Docker image for the demo app'
     command: './deployment/bin/build_publish.sh ${BUILDKITE_BUILD_NUMBER}'
+    plugins:
+      ecr#v1.1.4:
+        login: true
     agents:
       queue: 'pe-dev-dflt'
 
-  - wait:
-
-  - label: ':kubernetes: Deploy to SIT'
+  - label: ':kubernetes: Deploy to Europa-Preprod'
     # ${BUILDKITE_BUILD_NUMBER} should be a valid Docker image tag available in the
     # Docker image repository mentioned in the deployment file.
-    command:  'deployment/bin/deploy.sh dev ${BUILDKITE_BUILD_NUMBER}'
+    command:  'deployment/bin/deploy_europa.sh europa-preprod ${BUILDKITE_BUILD_NUMBER}'
     branches: 'master'
     agents:
       # your team's queue
-      queue: 'pe-dev-dflt'
+      queue: 'europa-preprod-platform-enablement'
 
-    # after Docker images have been build, and you are happy with its behaviour
-    # on SIT env, it is time to promote the very same artifact to PROD env.
-  - block: ":hurtrealbad: deploy PRE-PROD??"
-    branches: 'master'
-
-  - label: ':kubernetes: Deploy to PRE-PROD'
-    command:  'deployment/bin/deploy.sh jupiter-preprod ${BUILDKITE_BUILD_NUMBER}'
-    branches: 'master'
-    agents:
-      queue: 'cluster-sit-dflt'
 
   - block: ":godmode: deploy PROD??"
-    branches: 'master'
 
-  - label: ':kubernetes: Deploy to PROD'
-    command:  'deployment/bin/deploy.sh jupiter ${BUILDKITE_BUILD_NUMBER}'
+  - label: ':kubernetes: Deploy to Europa'
+    # ${BUILDKITE_BUILD_NUMBER} should be a valid Docker image tag available in the
+    # Docker image repository mentioned in the deployment file.
+    command:  'deployment/bin/deploy_europa.sh europa ${BUILDKITE_BUILD_NUMBER}'
     branches: 'master'
     agents:
-      queue: 'cluster-prod-dflt'
+      # your team's queue
+      queue: 'europa-platform-enablement'

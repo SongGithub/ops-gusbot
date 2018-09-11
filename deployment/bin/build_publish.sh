@@ -25,22 +25,6 @@ get_ecr_details() {
   fi
 }
 
-ecr_login() {
-  echo "  trying to login ECR...."
-  image_name=$(get_image_name)
-  ecr_details=$(get_ecr_details "$image_name")
-  aws_account_id=${ecr_details%%_*}
-  region=${ecr_details##*_}
-  ecr_auth_token=$($dcr aws-jq aws ecr get-authorization-token \
-    --region "$region" \
-    --output text \
-    --query 'authorizationData[].authorizationToken' | base64 --decode | cut -d: -f2)
-  echo $ecr_auth_token | docker login -u \
-    AWS https://"$aws_account_id".dkr.ecr."$region".amazonaws.com \
-    --password-stdin
-}
-
-
 build_and_push_image() {
   tag=$1
   full_image_name=$(get_image_name):"$tag"
@@ -56,5 +40,4 @@ check_aws_token() {
 [ "$#" -ne 1 ] && usage
 docker-compose -f deployment/docker-compose.yml pull
 check_aws_token
-ecr_login
 build_and_push_image "$image_tag"
