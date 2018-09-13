@@ -17,3 +17,5 @@ testrun.sh
 
 # dbs
 *.db
+
+deployment/_build
