@@ -14,7 +14,7 @@ This plugin looks for `@here` and `@channel` messages and replies with a request
 
 This project is written in python and run in Kubernetes. You can find more information about it's deployment in [the pipeline](./.buildkite/pipeline.yml). There are 2 versions of the bot:
 
-- One is continuously deployed into the QA cluster(`europa-stg`) as `Gus Bot Edge` and it is used for testing purposes
+- One is continuously deployed into the SIT cluster(`europa-preprod`) as `Gus Bot Edge` and it is used for testing purposes
 - The other is deployed on demand (by unblocking the pipeline) in the Prod cluster (`europa`) as `Gus Bot`
 
 ## Deployment
@@ -38,3 +38,5 @@ This project is written in python and run in Kubernetes. You can find more infor
 ## TODO/Wishlist:
 
 - Add health check + Alerts in case the application suddenly stops working.
+- Allow users to be added by Slack User Group. 
+- Data migration/import-export 
